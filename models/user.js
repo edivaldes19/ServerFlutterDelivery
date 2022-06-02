@@ -16,14 +16,14 @@ User.register = async (user, result) => {
         updated_at
     )
 VALUES
-    (?, ?, ?, ?, ?, ?, ?, ?);
+    (?, ?, ?, ?, ?, ?, ?, ?)
     `
     db.query(sql, [user.email, user.name, user.lastname, user.phone, user.image, hash, new Date(), new Date()], (err, res) => {
         if (err) {
-            console.log('Error: ', err);
+            console.log('ERROR', err)
             result(err, null)
         } else {
-            console.log('REGISTERED USER ID: ', res.insertId);
+            console.log('REGISTERED USER ID', res.insertId)
             result(null, res.insertId)
         }
     })
@@ -31,24 +31,42 @@ VALUES
 User.findById = (id, result) => {
     const sql = `
     SELECT
-    id,
-    email,
-    name,
-    lastname,
-    phone,
-    image,
-    password
+    CONVERT(U.id, char) AS id,
+    U.email,
+    U.name,
+    U.lastname,
+    U.phone,
+    U.image,
+    U.password,
+    U.created_at,
+    U.updated_at,
+    JSON_ARRAYAGG(
+        JSON_OBJECT(
+            'id',
+            CONVERT(R.id, char),
+            'name',
+            R.name,
+            'image',
+            R.image,
+            'route',
+            R.route
+        )
+    ) AS roles
 FROM
-    users
+    users AS U
+    INNER JOIN user_has_roles AS UHR ON UHR.id_user = U.id
+    INNER JOIN roles AS R ON UHR.id_rol = R.id
 WHERE
-    id = ?;
+    U.id = ?
+GROUP BY
+    U.id
     `
     db.query(sql, [id], (err, user) => {
         if (err) {
-            console.log('Error: ', err);
+            console.log('ERROR', err)
             result(err, null)
         } else {
-            console.log('User: ', user[0]);
+            console.log('USER', user[0])
             result(null, user[0])
         }
     })
@@ -56,25 +74,88 @@ WHERE
 User.findByEmail = (email, result) => {
     const sql = `
     SELECT
-    id,
-    email,
-    name,
-    lastname,
-    phone,
-    image,
-    password
+    U.id,
+    U.email,
+    U.name,
+    U.lastname,
+    U.phone,
+    U.image,
+    U.password,
+    U.created_at,
+    U.updated_at,
+    JSON_ARRAYAGG(
+        JSON_OBJECT(
+            'id',
+            CONVERT(R.id, char),
+            'name',
+            R.name,
+            'image',
+            R.image,
+            'route',
+            R.route
+        )
+    ) AS roles
 FROM
-    users
+    users AS U
+    INNER JOIN user_has_roles AS UHR ON UHR.id_user = U.id
+    INNER JOIN roles AS R ON UHR.id_rol = R.id
 WHERE
-    email = ?;
+    email = ?
+GROUP BY
+    U.id
     `
     db.query(sql, [email], (err, user) => {
         if (err) {
-            console.log('Error: ', err);
+            console.log('ERROR', err)
             result(err, null)
         } else {
-            console.log('User: ', user[0]);
+            console.log('USER', user[0])
             result(null, user[0])
+        }
+    })
+}
+User.updateProfileWithImage = (user, result) => {
+    const sql = `
+    UPDATE
+    users
+SET
+    name = ?,
+    lastname = ?,
+    phone = ?,
+    image = ?,
+    updated_at = ?
+WHERE
+    id = ?
+    `
+    db.query(sql, [user.name, user.lastname, user.phone, user.image, new Date(), user.id], (err, res) => {
+        if (err) {
+            console.log('ERROR', err)
+            result(err, null)
+        } else {
+            console.log('REGISTERED USER ID', user.id)
+            result(null, user.id)
+        }
+    })
+}
+User.updateProfileWithoutImage = (user, result) => {
+    const sql = `
+    UPDATE
+    users
+SET
+    name = ?,
+    lastname = ?,
+    phone = ?,
+    updated_at = ?
+WHERE
+    id = ?
+    `
+    db.query(sql, [user.name, user.lastname, user.phone, new Date(), user.id], (err, res) => {
+        if (err) {
+            console.log('ERROR', err)
+            result(err, null)
+        } else {
+            console.log('REGISTERED USER ID', user.id)
+            result(null, user.id)
         }
     })
 }
