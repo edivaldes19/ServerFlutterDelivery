@@ -9,8 +9,8 @@ Order.findByStatus = (status, result) => {
     CONVERT(O.id_delivery, char) AS id_delivery,
     O.status,
     O.timestamp,
-    O.lat,
-    O.lng,
+    O.latitude,
+    O.longitude,
     JSON_OBJECT(
         'id',
         CONVERT(A.id, char),
@@ -18,10 +18,10 @@ Order.findByStatus = (status, result) => {
         A.address,
         'reference',
         A.reference,
-        'lat',
-        A.lat,
-        'lng',
-        A.lng
+        'latitude',
+        A.latitude,
+        'longitude',
+        A.longitude
     ) AS address,
     JSON_OBJECT(
         'id',
@@ -99,8 +99,8 @@ Order.findByDeliveryAndStatus = (id_delivery, status, result) => {
     CONVERT(O.id_delivery, char) AS id_delivery,
     O.status,
     O.timestamp,
-    O.lat,
-    O.lng,
+    O.latitude,
+    O.longitude,
     JSON_OBJECT(
         'id',
         CONVERT(A.id, char),
@@ -108,10 +108,10 @@ Order.findByDeliveryAndStatus = (id_delivery, status, result) => {
         A.address,
         'reference',
         A.reference,
-        'lat',
-        A.lat,
-        'lng',
-        A.lng
+        'latitude',
+        A.latitude,
+        'longitude',
+        A.longitude
     ) AS address,
     JSON_OBJECT(
         'id',
@@ -190,8 +190,8 @@ Order.findByClientAndStatus = (id_client, status, result) => {
     CONVERT(O.id_delivery, char) AS id_delivery,
     O.status,
     O.timestamp,
-    O.lat,
-    O.lng,
+    O.latitude,
+    O.longitude,
     JSON_OBJECT(
         'id',
         CONVERT(A.id, char),
@@ -199,10 +199,10 @@ Order.findByClientAndStatus = (id_client, status, result) => {
         A.address,
         'reference',
         A.reference,
-        'lat',
-        A.lat,
-        'lng',
-        A.lng
+        'latitude',
+        A.latitude,
+        'longitude',
+        A.longitude
     ) AS address,
     JSON_OBJECT(
         'id',
@@ -290,8 +290,7 @@ VALUES
         if (err) {
             console.log('ERROR', err)
             result(err, null)
-        }
-        else {
+        } else {
             console.log('ORDER ID', res.insertId)
             result(null, res.insertId)
         }
@@ -360,13 +359,13 @@ Order.updateLatLng = (order, result) => {
     UPDATE
     orders
 SET
-    lat = ?,
-    lng = ?,
+    latitude = ?,
+    longitude = ?,
     updated_at = ?
 WHERE
     id = ?;
     `
-    db.query(sql, [order.lat, order.lng, new Date(), order.id], (err, res) => {
+    db.query(sql, [order.latitude, order.longitude, new Date(), order.id], (err, res) => {
         if (err) {
             console.log('ERROR', err)
             result(err, null)

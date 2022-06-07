@@ -1,7 +1,7 @@
 const Order = require('../models/order')
 const OrderHasProducts = require('../models/order_has_products')
 const User = require('../models/user')
-// const PushNotificationsController = require('../controllers/pushNotificationsController')
+const PushNotificationsController = require('../controllers/push_notifications_controller')
 module.exports = {
     findByStatus(req, res) {
         const status = req.params.status
@@ -100,14 +100,14 @@ module.exports = {
                     error: err
                 })
             }
-            User.findById(order.id_delivery, (err, user) => {
-                if (user !== undefined && user !== null) {
-                    console.log('NOTIFICATION TOKEN', user.notification_token)
-                    // PushNotificationsController.sendNotification(user.notification_token, {
-                    //     title: 'Pedido asignado',
-                    //     body: `${user.name} ${user.lastname} ha realizado un pedido.`,
-                    //     id_notification: '1'
-                    // })
+            User.findById(order.id_delivery, (err, delivery) => {
+                if (delivery !== undefined && delivery !== null) {
+                    console.log('NOTIFICATION TOKEN', delivery.notification_token)
+                    PushNotificationsController.sendNotification(delivery.notification_token, {
+                        title: `Hola ${delivery.name}`,
+                        body: `Te han asignado un pedido para entregar.`,
+                        id_notification: '1'
+                    })
                 }
             })
             return res.status(201).json({
@@ -132,7 +132,6 @@ module.exports = {
                 message: 'Orden actualizada exitosamente.',
                 data: `${id_order}`
             })
-
         })
     },
     updateToDelivered(req, res) {

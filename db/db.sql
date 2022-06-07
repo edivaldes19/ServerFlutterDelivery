@@ -5,6 +5,7 @@ CREATE TABLE users(
     email VARCHAR(50) NOT NULL UNIQUE,
     name VARCHAR(50) NOT NULL,
     lastname VARCHAR(50) NOT NULL,
+    notification_token VARCHAR(255),
     phone VARCHAR(10) NOT NULL UNIQUE,
     image VARCHAR(250) NULL,
     password VARCHAR(50) NOT NULL,
@@ -49,6 +50,28 @@ FROM
     users
 WHERE
     email = ?;
+
+SELECT
+    CONVERT(U.id, char) AS id,
+    U.email,
+    U.name,
+    U.lastname,
+    U.image,
+    U.phone
+FROM
+    users AS U
+    INNER JOIN user_has_roles AS UHR ON UHR.id_user = U.id
+    INNER JOIN roles AS R ON R.id = UHR.id_rol
+WHERE
+    R.id = 2;
+
+UPDATE
+    users
+SET
+    notification_token = ?,
+    updated_at = ?
+WHERE
+    id = ?;
 
 CREATE TABLE roles(
     id BIGINT PRIMARY KEY AUTO_INCREMENT,
@@ -348,8 +371,8 @@ SELECT
     CONVERT(O.id_delivery, char) AS id_delivery,
     O.status,
     O.timestamp,
-    O.lat,
-    O.lng,
+    O.latitude,
+    O.longitude,
     JSON_OBJECT(
         'id',
         CONVERT(A.id, char),
@@ -357,10 +380,10 @@ SELECT
         A.address,
         'reference',
         A.reference,
-        'lat',
-        A.lat,
-        'lng',
-        A.lng
+        'latitude',
+        A.latitude,
+        'longitude',
+        A.longitude
     ) AS address,
     JSON_OBJECT(
         'id',
@@ -427,8 +450,8 @@ SELECT
     CONVERT(O.id_delivery, char) AS id_delivery,
     O.status,
     O.timestamp,
-    O.lat,
-    O.lng,
+    O.latitude,
+    O.longitude,
     JSON_OBJECT(
         'id',
         CONVERT(A.id, char),
@@ -436,10 +459,10 @@ SELECT
         A.address,
         'reference',
         A.reference,
-        'lat',
-        A.lat,
-        'lng',
-        A.lng
+        'latitude',
+        A.latitude,
+        'longitude',
+        A.longitude
     ) AS address,
     JSON_OBJECT(
         'id',
@@ -507,8 +530,8 @@ SELECT
     CONVERT(O.id_delivery, char) AS id_delivery,
     O.status,
     O.timestamp,
-    O.lat,
-    O.lng,
+    O.latitude,
+    O.longitude,
     JSON_OBJECT(
         'id',
         CONVERT(A.id, char),
@@ -516,10 +539,10 @@ SELECT
         A.address,
         'reference',
         A.reference,
-        'lat',
-        A.lat,
-        'lng',
-        A.lng
+        'latitude',
+        A.latitude,
+        'longitude',
+        A.longitude
     ) AS address,
     JSON_OBJECT(
         'id',
@@ -620,8 +643,8 @@ WHERE
 UPDATE
     orders
 SET
-    lat = ?,
-    lng = ?,
+    latitude = ?,
+    longitude = ?,
     updated_at = ?
 WHERE
     id = ?;
@@ -637,3 +660,15 @@ INSERT INTO
     )
 VALUES
     (?, ?, ?, ?, ?);
+
+/**********findAdmins**********/
+SELECT
+    CONVERT(U.id, char) AS id,
+    U.name,
+    U.notification_token
+FROM
+    users AS U
+    INNER JOIN user_has_roles AS UHR ON UHR.id_user = U.id
+    INNER JOIN roles AS R ON R.id = UHR.id_rol
+WHERE
+    R.id = 1;

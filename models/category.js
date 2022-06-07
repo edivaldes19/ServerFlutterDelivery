@@ -15,8 +15,7 @@ ORDER BY
         if (err) {
             console.log('ERROR', err)
             result(err, null)
-        }
-        else {
+        } else {
             console.log('CATEGORIES', data)
             result(null, data)
         }
@@ -38,8 +37,7 @@ VALUES
         if (err) {
             console.log('ERROR', err)
             result(err, null)
-        }
-        else {
+        } else {
             console.log('CATEGORY ID', res.insertId)
             result(null, res.insertId)
         }

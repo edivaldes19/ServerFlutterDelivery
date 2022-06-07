@@ -40,6 +40,7 @@ User.findById = (id, result) => {
     U.password,
     U.created_at,
     U.updated_at,
+    U.notification_token,
     JSON_ARRAYAGG(
         JSON_OBJECT(
             'id',
@@ -114,6 +115,53 @@ GROUP BY
         }
     })
 }
+User.findDeliveryMen = (result) => {
+    const sql = `
+    SELECT
+    CONVERT(U.id, char) AS id,
+    U.email,
+    U.name,
+    U.lastname,
+    U.image,
+    U.phone
+FROM
+    users AS U
+    INNER JOIN user_has_roles AS UHR ON UHR.id_user = U.id
+    INNER JOIN roles AS R ON R.id = UHR.id_rol
+WHERE
+    R.id = 2
+    `
+    db.query(sql, (err, data) => {
+        if (err) {
+            console.log('ERROR', err)
+            result(err, null)
+        } else {
+            result(null, data)
+        }
+    })
+}
+User.findAdmins = (result) => {
+    const sql = `
+    SELECT
+    CONVERT(U.id, char) AS id,
+    U.name,
+    U.notification_token
+FROM
+    users AS U
+    INNER JOIN user_has_roles AS UHR ON UHR.id_user = U.id
+    INNER JOIN roles AS R ON R.id = UHR.id_rol
+WHERE
+    R.id = 1;
+    `
+    db.query(sql, (err, data) => {
+        if (err) {
+            console.log('ERROR', err)
+            result(err, null)
+        } else {
+            result(null, data)
+        }
+    })
+}
 User.updateProfileWithImage = (user, result) => {
     const sql = `
     UPDATE
@@ -156,6 +204,25 @@ WHERE
         } else {
             console.log('REGISTERED USER ID', user.id)
             result(null, user.id)
+        }
+    })
+}
+User.updateNotificationToken = (id, token, result) => {
+    const sql = `
+    UPDATE
+    users
+SET
+    notification_token = ?,
+    updated_at = ?
+WHERE
+    id = ?
+    `
+    db.query(sql, [token, new Date(), id], (err, res) => {
+        if (err) {
+            console.log('ERROR', err)
+            result(err, null)
+        } else {
+            result(null, id)
         }
     })
 }

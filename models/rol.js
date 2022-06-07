@@ -12,7 +12,7 @@ VALUES
             console.log('ERROR', err)
             result(err, null)
         } else {
-            console.log('REGISTERED USER ID', res.insertId)
+            console.log('ROL REGISTERED USER ID', res.insertId)
             result(null, res.insertId)
         }
     })

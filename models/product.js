@@ -96,7 +96,7 @@ SET
 WHERE
     id = ?;
     `
-    db.query(sql, [product.name, product.description, product.price, product.image1, product.image2, product.image3, product.id_category, new Date(), product.id], (err, res) => {
+    db.query(sql, [product.name, product.description, product.price, product.image1, product.image2, product.image3, product.id_category, new Date(), product.id], (err) => {
         if (err) {
             console.log('ERROR', err)
             result(err, null)
